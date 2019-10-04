@@ -1,12 +1,14 @@
 <template>
   <div class="metronome" ref="metronome" :style="cssProps">
-    <div v-bind:class="['rotate-box', counter % 2 == 0 ? 'rotate-box-right' : 'rotate-box-left']">
+    <div class="rotate-box" ref="rotateBox">
       <div class="ball"></div>
     </div>
   </div>
 </template>
 
 <script>
+import { TimelineLite, Power0 } from 'gsap'
+
 export default {
   name: 'Metronome',
   props: {
@@ -48,9 +50,7 @@ export default {
     },
     cssProps() {
       return {
-        '--motion-angle': this.rbAngle + 'rad',
         '--ball-radius': '20px',
-        '--ball-period': this.period + 'ms',
         '--rotate-box-height': this.rbHeight + 'px'
       }
     }
@@ -59,8 +59,8 @@ export default {
     return {
         rbHeight: 0,
         rbAngle: '0rad',
+        ballTimeline: null,
 
-        started: false,
         timer : null,
         counter : 0,
 
@@ -82,11 +82,16 @@ export default {
       oscillator.stop(this.audioCtx.currentTime + 0.008);
     },
     start() {
-      this.started = true;
+      this.counter = 0;
+      this.ballTimeline = new TimelineLite();
       this.timer = setInterval(function(){
-        this.rotate = this.counter % 2 == 0
-          ? this.angle
-          : 0;
+        if (this.counter == 0) {
+          this.ballTimeline.to(this.$refs.rotateBox, this.period / 1000, {ease: Power0.easeNone, rotation: this.rbAngle});
+        } else if (this.counter > 0 && this.counter % 2 == 0) {
+          this.ballTimeline.play();
+        } else if (this.counter > 0 && this.counter % 2 == 1) {
+          this.ballTimeline.reverse();
+        }
 
         let which = this.counter % this.beats.length;
         for (let beat of this.beats[which]) {
@@ -99,9 +104,20 @@ export default {
       }.bind(this), this.period);
     },
     stop() {
-      this.started = false;
+      if (this.ballTimeline !== null) {
+        this.ballTimeline.pause();
+        this.ballTimeline.progress(0);
+        this.ballTimeline.kill();
+        this.ballTimeline = null;
+      }
       this.counter = 0;
       clearInterval(this.timer);
+    }
+  },
+  watch: {
+    bpm() {
+      this.stop();
+      this.start();
     }
   },
   mounted() {
@@ -109,7 +125,7 @@ export default {
     let mheight = this.$refs.metronome.clientHeight;
 
     let motionRadius = (mwidth * mwidth + 4 * mheight * mheight) / (8 * mheight);
-    this.rbAngle = 2 * Math.asin(mwidth / (2 * motionRadius));
+    this.rbAngle = 2 * Math.asin(mwidth / (2 * motionRadius)) / Math.PI * 180;
     this.rbHeight = 2 * Math.sqrt(motionRadius * motionRadius - (mwidth / 2) * (mwidth / 2));
 
     this.audioCtx = new AudioContext();
@@ -133,20 +149,11 @@ export default {
   position: absolute;
   margin: 0;
   padding: 0;
-  border: 1px solid blue;
-  transition-property: transform;
-  transition-timing-function: linear;
-  transition-duration: var(--ball-period);
+  border: 0;
   width: 100%;
   height: var(--rotate-box-height);
   left: 0;
   top: 100%;
-}
-.rotate-box-right {
-  transform: rotate(var(--motion-angle));
-}
-.rotate-box-left {
-  transform: rotate(0deg);
 }
 .ball {
   width: 0;

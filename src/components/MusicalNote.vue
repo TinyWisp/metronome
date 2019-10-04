@@ -31,7 +31,6 @@ export default {
       }
     },
     draw() {
-      console.log('description: ' + this.description + '\n');
       let desc = this.description;
       let noteClass = '';
       let pieces = [];
@@ -42,8 +41,6 @@ export default {
       let tmps = desc.split('>');
       noteClass = tmps[0];
       let piecesStr = tmps[1];
-
-      console.log('piecesStr: ' + piecesStr + '\n');
 
       let pieceStrArr = piecesStr.split('|');
       for (let pieceStr of pieceStrArr) {
@@ -78,7 +75,6 @@ export default {
   width: auto;
   height: auto;
   padding: 0;
-  margin-right: 10px;
 }
 .piece {
   width: 10px;
@@ -203,6 +199,7 @@ export default {
 }
 .tuple {
   position: relative;
+  color: var(--color);
 }
 .tuple::before {
   content: '';
