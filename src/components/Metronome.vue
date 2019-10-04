@@ -61,7 +61,9 @@ export default {
         rbAngle: '0rad',
         ballTimeline: null,
 
+        started: false,
         timer : null,
+        beatTimers: [],
         counter : 0,
 
         audioCtx: null,
@@ -82,6 +84,7 @@ export default {
       oscillator.stop(this.audioCtx.currentTime + 0.008);
     },
     start() {
+      this.started = true;
       this.counter = 0;
       this.ballTimeline = new TimelineLite();
       this.timer = setInterval(function(){
@@ -95,15 +98,18 @@ export default {
 
         let which = this.counter % this.beats.length;
         for (let beat of this.beats[which]) {
-          setTimeout(function(){
+          this.beatTimers = [];
+          let beatTimer = setTimeout(function(){
             this.beep(beat.type);
-          }.bind(this), beat.time)
+          }.bind(this), beat.time);
+          this.beatTimers.push(beatTimer);
         }
 
         this.counter = this.counter + 1;
       }.bind(this), this.period);
     },
     stop() {
+      this.started = false;
       if (this.ballTimeline !== null) {
         this.ballTimeline.pause();
         this.ballTimeline.progress(0);
@@ -112,12 +118,17 @@ export default {
       }
       this.counter = 0;
       clearInterval(this.timer);
+      for (let i=0; i<this.beatTimers.length; i++) {
+        clearTimeout(this.beatTimers[i]);
+      }
     }
   },
   watch: {
     bpm() {
-      this.stop();
-      this.start();
+      if (this.started) {
+        this.stop();
+        this.start();
+      }
     }
   },
   mounted() {

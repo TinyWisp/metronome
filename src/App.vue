@@ -76,11 +76,11 @@ export default {
         },
         '1/20_1/20_1/20_1/20_1/20': {
           descriptions: ['tuple t5>stem,head|w1o5@hline one,stem,head|w1o5@hline one,stem,head|w1o5@hline one,stem,head|w1o5@hline one,stem,head'],
-          rhymePaterrn: '12222'
+          rhymePattern: '12222'
         },
         '1/20_1/20_1/20_1/20_1/20_1/4': {
           descriptions: ['tuple t5>stem,head|w1o3@hline one,stem,head|w1o3@hline one,stem,head|w1o3@hline one,stem,head|w1o3@hline one,stem,head', 'stem,head'],
-          rhymePaterrn: '12222,1'
+          rhymePattern: '12222,1'
         },
         '3/16_1/16': {
           descriptions: ['stem,head|hline one,dot|hline one|stem,head,hline one,hline two'],
@@ -153,10 +153,6 @@ export default {
         '1/16_1/16_3/8_1/4': {
           descriptions: ['stem,head|w1o5@hline one,hline two,stem,head', 'stem,head|dot', 'stem,head'],
           rhymePattern: '1220,0,1'
-        },
-        '1/8': {
-          descriptions: ['stem,head|flag'],
-          rhymePattern: '1'
         }
       },
       rhymePatternRows: [
@@ -173,7 +169,6 @@ export default {
   methods: {
     modifyBpm(val) {
       this.bpm = this.bpm + val;
-      this.stop();
     },
     setRhymePattern(rhymePattern) {
       this.rhymePattern = rhymePattern;
