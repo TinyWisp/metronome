@@ -1,33 +1,35 @@
 <template>
   <div id="app">
-    <div class="metronome-container">
+    <div class="monitor">
       <div class="btn btn-start" v-if="!started" @click="start()"></div>
       <div class="btn btn-stop" v-if="started" @click="stop()"></div>
       <Metronome :bpm="bpm" :rhymePattern="rhymePattern" class="metronome" ref="metronome"></Metronome>
     </div>
-    <div class="row">
-      <div class="col bpm-control">
-        <em class="btn btn-left" @click="modifyBpm(-10)">-</em>
-        <em class="btn btn-left" @click="modifyBpm(-1)">-</em>
-         {{bpm}}
-        <em class="btn btn-right" @click="modifyBpm(1)">+</em>
-        <em class="btn btn-right" @click="modifyBpm(10)">+</em>
+    <div class="control-panel">
+      <div class="row">
+        <div class="col bpm-control">
+          <em class="btn btn-left" @click="modifyBpm(-10)">-</em>
+          <em class="btn btn-left" @click="modifyBpm(-1)">-</em>
+           {{bpm}}
+          <em class="btn btn-right" @click="modifyBpm(1)">+</em>
+          <em class="btn btn-right" @click="modifyBpm(10)">+</em>
+        </div>
       </div>
-    </div>
-    <div class="row" :key=i v-for="(row, i) in rhymePatternRows">
-      <div
-        :class="{'col': true, 'col-rp-selected': notes[rp]['rhymePattern'] == rhymePattern}"
-        :style="{width: 100 / row.length + '%'}"
-        :key=j v-for="(rp, j) in row">
-        <div class="musical-note-container" @click="setRhymePattern(notes[rp]['rhymePattern'])">
-          <MusicalNote
-            color="#cccccc"
-            backgroundColor="#333333"
-            class="musical-note"
-            :description="description"
-            :key=k
-            v-for="(description, k) in notes[rp]['descriptions']">
-          </MusicalNote>
+      <div class="row" :key=i v-for="(row, i) in rhymePatternRows">
+        <div
+          :class="{'col': true, 'col-rp-selected': notes[rp]['rhymePattern'] == rhymePattern}"
+          :style="{width: 100 / row.length + '%'}"
+          :key=j v-for="(rp, j) in row">
+          <div class="musical-note-container" @click="setRhymePattern(notes[rp]['rhymePattern'])">
+            <MusicalNote
+              :color="notes[rp]['rhymePattern'] == rhymePattern ? 'rgb(49, 145, 231)' : '#cccccc'"
+              backgroundColor="#333333"
+              class="musical-note"
+              :description="description"
+              :key=k
+              v-for="(description, k) in notes[rp]['descriptions']">
+            </MusicalNote>
+          </div>
         </div>
       </div>
     </div>
@@ -186,23 +188,28 @@ export default {
 </script>
 
 <style>
+body {
+  background-color: black;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
   background-color: #333333;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  position: absolute;
 }
-.metronome-container {
+.monitor {
   width: 100%;
-  height: 150px;
+  height: calc(100% - 408px);
   overflow: hidden;
-  border: 1px solid red;
+  border: 1px solid #cccccc;
+  background-color: black;
+  border-radius: 5px;
   position: relative;
 }
-.metronome-container .btn {
+.monitor .btn {
   display: block;
   position: absolute;
   left: calc(50% - 16px);
@@ -210,7 +217,7 @@ export default {
   border-color: #cccccc;
   z-index: 11;
 }
-.metronome-container .btn-start {
+.monitor .btn-start {
   border-top: 16px solid transparent;
   border-left: 32px solid #cccccc;
   border-bottom: 16px solid transparent;
@@ -218,7 +225,7 @@ export default {
   width: 0;
   height: 0;
 }
-.metronome-container .btn-stop {
+.monitor .btn-stop {
   border-left: 8px solid #cccccc;
   border-right: 8px solid #cccccc;
   border-top: 0;
@@ -226,10 +233,40 @@ export default {
   width: 16px;
   height: 32px;
 }
-.metronome-container .metronome {
+.monitor .metronome {
   z-index: 10;
 }
-.row {
+.control-panel {
+  width: 100%;
+  height: 400px;
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+  background-color: #333333;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+}
+.control-panel::before {
+  content: '';
+  width: 100%;
+  height: 20px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-image:linear-gradient(to bottom, #333333, rgba(85, 85, 85, 0.5));
+  border: 0;
+  border-radius: 5px 5px 0 0;
+  z-index: 100;
+}
+.control-panel .row {
+  flex-grow: 1;
+  flex-shrink: 1;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -239,8 +276,9 @@ export default {
   width: 100%;
   height: 50px;
   border: 0;
+  z-index: 200;
 }
-.col {
+.control-panel .col {
   flex-grow: 1;
   flex-shrink: 1;
   display: block;
@@ -252,11 +290,14 @@ export default {
   height: calc(100% - 1px);
   overflow: hidden;
 }
-.col:last-child {
+.control-panel .col:last-child {
   border-right: 0;
 }
-.col-rp-selected {
+.control-panel .col-rp-selected {
   box-shadow: 0 0 5px white;
+}
+.control-panel .row:first-child .col {
+  border-top: 0;
 }
 .musical-note-container {
   display: flex;
@@ -275,12 +316,13 @@ export default {
   flex-grow: 0;
   margin-right: 10px;
 }
-.bpm-control {
+.control-panel .bpm-control {
   font-size: 32px;
   line-height: 50px;
   color: #cccccc;
+  text-align: center;
 }
-.bpm-control .btn {
+.control-panel .bpm-control .btn {
   display: inline-block;
   width: 32px;
   height: 32px;
@@ -290,11 +332,12 @@ export default {
   font-size: 32px;
   line-height: 32px;
   background-color: #333333;
+  font-style: normal;
 }
-.bpm-control .btn-left {
+.control-panel .bpm-control .btn-left {
   margin-right: 10px;
 }
-.bpm-control .btn-right {
+.control-panel .bpm-control .btn-right {
   margin-left: 10px;
 }
 </style>

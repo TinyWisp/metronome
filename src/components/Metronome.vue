@@ -87,25 +87,9 @@ export default {
       this.started = true;
       this.counter = 0;
       this.ballTimeline = new TimelineLite();
+      this.playInOnePeriod();
       this.timer = setInterval(function(){
-        if (this.counter == 0) {
-          this.ballTimeline.to(this.$refs.rotateBox, this.period / 1000, {ease: Power0.easeNone, rotation: this.rbAngle});
-        } else if (this.counter > 0 && this.counter % 2 == 0) {
-          this.ballTimeline.play();
-        } else if (this.counter > 0 && this.counter % 2 == 1) {
-          this.ballTimeline.reverse();
-        }
-
-        let which = this.counter % this.beats.length;
-        for (let beat of this.beats[which]) {
-          this.beatTimers = [];
-          let beatTimer = setTimeout(function(){
-            this.beep(beat.type);
-          }.bind(this), beat.time);
-          this.beatTimers.push(beatTimer);
-        }
-
-        this.counter = this.counter + 1;
+        this.playInOnePeriod();
       }.bind(this), this.period);
     },
     stop() {
@@ -118,9 +102,30 @@ export default {
       }
       this.counter = 0;
       clearInterval(this.timer);
+      this.timer = null;
       for (let i=0; i<this.beatTimers.length; i++) {
         clearTimeout(this.beatTimers[i]);
       }
+    },
+    playInOnePeriod() {
+      if (this.counter == 0) {
+        this.ballTimeline.to(this.$refs.rotateBox, this.period / 1000, {ease: Power0.easeNone, rotation: this.rbAngle});
+      } else if (this.counter > 0 && this.counter % 2 == 0) {
+        this.ballTimeline.play();
+      } else if (this.counter > 0 && this.counter % 2 == 1) {
+        this.ballTimeline.reverse();
+      }
+
+      let which = this.counter % this.beats.length;
+      for (let beat of this.beats[which]) {
+        this.beatTimers = [];
+        let beatTimer = setTimeout(function(){
+          this.beep(beat.type);
+        }.bind(this), beat.time);
+        this.beatTimers.push(beatTimer);
+      }
+
+      this.counter = this.counter + 1;
     }
   },
   watch: {
