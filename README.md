@@ -1,29 +1,7 @@
 # metronome
+![](https://img.shields.io/github/license/tinywisp/metronome.svg)
 
-## Project setup
-```
-npm install
-```
+一个支持节奏型的节拍器
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## demo
+![](docs/demo.png)
